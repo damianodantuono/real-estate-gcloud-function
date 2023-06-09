@@ -1,0 +1,12 @@
+steps:
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+  - gcloud
+  - functions
+  - deploy
+  - file-processing
+  - --region=europe-west1
+  - --source=.
+  - --trigger-bucket=immobiliare-daily-data
+  - --runtime=python311
+  - --gen2
