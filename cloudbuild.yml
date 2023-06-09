@@ -10,3 +10,4 @@ steps:
   - --trigger-bucket=immobiliare-daily-data
   - --runtime=python311
   - --gen2
+  - --trigger-location=eu
