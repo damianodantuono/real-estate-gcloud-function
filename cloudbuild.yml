@@ -5,7 +5,7 @@ steps:
   - functions
   - deploy
   - file-processing
-  - --region=eu
+  - --region=eu-west1
   - --source=.
   - --trigger-bucket=immobiliare-daily-data
   - --runtime=python311
