@@ -1,5 +1,4 @@
 import functions_framework
-import re
 from google.cloud import bigquery
 from google.cloud import storage
 
@@ -11,25 +10,35 @@ def hello_gcs(cloud_event):
     bucket = data["bucket"]
     name = data["name"]
 
+    DESTINATION_BUCKET = 'archived-scraped-data'
+
     print("Triggered by a change in bucket: {}, file: {}".format(bucket, name))
 
-    pattern = re.compile(r"raw_data/(\w+)/?(\w+)*/(\d{8})\.parquet")
+    with bigquery.Client() as client:
 
-    if match := pattern.match(name):
-        city = match.group(1)
-        zone = match.group(2)
-        date = match.group(3)
-        print("City: {}, Zone: {}, Date: {}".format(city, zone, date))
-    else:
-        raise ValueError("Cannot fetch city and date from file name")
+        with open("sql_scripts/load_to_ext.sql.sql", "r") as f:
+            load_to_ext_query = f.read()
 
-    # fetch query from bucket
-    client = storage.Client()
-    bucket = client.bucket(bucket)
-    blob = bucket.blob(f"queries/{city}/query.sql")
-    query = blob.download_as_string().decode("utf-8")
+        client.query(load_to_ext_query)
 
-    # Set up BigQuery client
-    client = bigquery.Client()
-    client.query(query.format(CITY=city))
-    print("Query executed successfully")
+        print("loaded to ext table")
+
+        with open("sql_scripts/update_dim_city.sql", "r") as f:
+            update_dim_city_query = f.read()
+
+        client.query(update_dim_city_query)
+
+        print("updated dim city table")
+
+        with open("sql_scripts/insert_into_fct.sql", "r") as f:
+            insert_into_fct_query = f.read()
+
+        client.query(insert_into_fct_query)
+
+        print("inserted into fct table")
+
+    with storage.Client() as client:
+        bucket = client.get_bucket(bucket)
+        blob = bucket.blob(name)
+        _ = bucket.copy_blob(blob, DESTINATION_BUCKET, name)
+        blob.delete()
