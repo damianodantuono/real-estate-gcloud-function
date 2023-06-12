@@ -16,7 +16,7 @@ def file_processing(cloud_event):
 
     client = bigquery.Client()
 
-    with open("sql_scripts/load_to_ext.sql.sql", "r") as f:
+    with open("sql_scripts/load_to_ext.sql", "r") as f:
         load_to_ext_query = f.read()
 
     client.query(load_to_ext_query)
