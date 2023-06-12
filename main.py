@@ -5,7 +5,7 @@ from google.cloud import storage
 
 # Triggered by a change in a storage bucket
 @functions_framework.cloud_event
-def hello_gcs(cloud_event):
+def file_processing(cloud_event):
     data = cloud_event.data
 
     event_id = cloud_event["id"]
@@ -27,7 +27,6 @@ def hello_gcs(cloud_event):
 
 
 
-# import functions_framework
 
 #
 #

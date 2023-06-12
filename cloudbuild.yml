@@ -10,3 +10,4 @@ steps:
   - --trigger-bucket=scraped-data-gh
   - --runtime=python311
   - --gen2
+  - --entry-point=file_processing
