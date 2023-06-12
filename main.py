@@ -1,4 +1,7 @@
 import functions_framework
+from google.cloud import bigquery
+from google.cloud import storage
+
 
 # Triggered by a change in a storage bucket
 @functions_framework.cloud_event
@@ -25,8 +28,7 @@ def hello_gcs(cloud_event):
 
 
 # import functions_framework
-# from google.cloud import bigquery
-# from google.cloud import storage
+
 #
 #
 # # Triggered by a change in a storage bucket
