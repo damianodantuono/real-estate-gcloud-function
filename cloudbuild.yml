@@ -10,6 +10,3 @@ steps:
   - --trigger-bucket=scraped-data-gh
   - --runtime=python311
   - --gen2
-  - --trigger-location=europe-west1
-  - --service-account=etl-sa@real-estate-analyser-dv.iam.gserviceaccount.com
-  - --entry-point=main
