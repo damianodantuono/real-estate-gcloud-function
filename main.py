@@ -40,5 +40,5 @@ def file_processing(cloud_event):
     client = storage.Client()
     bucket = client.get_bucket(bucket)
     blob = bucket.blob(name)
-    _ = bucket.copy_blob(blob, DESTINATION_BUCKET, name)
+    _ = bucket.copy_blob(blob.path, DESTINATION_BUCKET, name)
     blob.delete()
