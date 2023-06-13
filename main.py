@@ -1,6 +1,7 @@
 import functions_framework
 from google.cloud import bigquery
 from google.cloud import storage
+from pathlib import Path
 
 
 # Triggered by a change in a storage bucket
@@ -9,6 +10,7 @@ def file_processing(cloud_event):
     data = cloud_event.data
     bucket = data["bucket"]
     name = data["name"]
+    filename = Path(name).name
 
     DESTINATION_BUCKET = 'archived-scraped-data'
 
@@ -48,5 +50,5 @@ def file_processing(cloud_event):
     print(destination_bucket)
     print(name)
 
-    # _ = source_bucket.copy_blob(blob, destination_bucket, name)
+    _ = source_bucket.copy_blob(blob, destination_bucket, filename)
     # blob.delete()
