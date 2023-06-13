@@ -14,7 +14,7 @@ INSERT INTO `real-estate-analyser-dv.dwhre.FCT_HOUSES` (
   FLOOR,
   LINK
 )
-SELECT
+SELECT distinct
 ID,
 TITLE,
 CITY_ID,
