@@ -19,48 +19,32 @@ def file_processing(cloud_event):
     client = bigquery.Client()
 
     with open("sql_scripts/load_to_ext.sql", "r") as f:
-        load_to_ext_query = f.read()
+        load_to_ext_query = f.read().format(bucket=bucket, name=name)
 
-    load_to_ext_queries = load_to_ext_query.strip().split(';')
-
-    for single_query in load_to_ext_queries:
-        print("running: " + single_query)
-        client.query(single_query)
+    _ = client.query(load_to_ext_query).result()
 
     print("loaded to ext table")
 
     with open("sql_scripts/update_dim_city.sql", "r") as f:
         update_dim_city_query = f.read()
 
-    update_dim_city_queries = update_dim_city_query.strip().split(';')
-
-    for single_query in update_dim_city_queries:
-        print("running: " + single_query)
-        client.query(single_query)
+    _ = client.query(update_dim_city_query).result()
 
     print("updated dim city table")
 
     with open("sql_scripts/insert_into_fct.sql", "r") as f:
         insert_into_fct_query = f.read()
 
-    insert_into_fct_queries = insert_into_fct_query.strip().split(';')
-
-    for single_query in insert_into_fct_queries:
-        print("running: " + single_query)
-        client.query(insert_into_fct_query)
+    _ = client.query(insert_into_fct_query).result()
 
     print("inserted into fct table")
 
-    # client = storage.Client()
-    # source_bucket = client.get_bucket(bucket)
-    # destination_bucket = client.get_bucket(DESTINATION_BUCKET)
-    # blob = source_bucket.blob(name)
-    #
-    # print("copying blob")
-    # print(blob)
-    # print(source_bucket)
-    # print(destination_bucket)
-    # print(name)
-    #
-    # _ = source_bucket.copy_blob(blob, destination_bucket, filename)
-    # blob.delete()
+    client = storage.Client()
+    source_bucket = client.get_bucket(bucket)
+    destination_bucket = client.get_bucket(DESTINATION_BUCKET)
+    blob = source_bucket.blob(name)
+
+    print(f"Archiving {filename} to {DESTINATION_BUCKET}")
+
+    _ = source_bucket.copy_blob(blob, destination_bucket, filename)
+    blob.delete()

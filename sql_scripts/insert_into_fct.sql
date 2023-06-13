@@ -1,7 +1,3 @@
-DELETE FROM `real-estate-analyser-dv.dwhre.FCT_HOUSES`
-WHERE ID IN (SELECT ID FROM `real-estate-analyser-dv.dwhre.EXT_HOUSES`)
-;
-
 INSERT INTO `real-estate-analyser-dv.dwhre.FCT_HOUSES` (
   ID,
   TITLE,
@@ -14,7 +10,7 @@ INSERT INTO `real-estate-analyser-dv.dwhre.FCT_HOUSES` (
   FLOOR,
   LINK
 )
-SELECT distinct
+SELECT
 ID,
 TITLE,
 CITY_ID,
@@ -27,6 +23,7 @@ FLOOR,
 LINK
 FROM `real-estate-analyser-dv.dwhre.EXT_HOUSES` ext
 INNER JOIN `real-estate-analyser-dv.dwhre.DIM_CITY` d on ext.CITY_NAME = d.CITY_NAME
+WHERE ID NOT IN (SELECT ID FROM `real-estate-analyser-dv.dwhre.FCT_HOUSES`)
 ;
 
 UPDATE `real-estate-analyser-dv.dwhre.FCT_HOUSES`
