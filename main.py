@@ -38,7 +38,8 @@ def file_processing(cloud_event):
     print("inserted into fct table")
 
     client = storage.Client()
-    bucket = client.get_bucket(bucket)
+    source_bucket = client.get_bucket(bucket)
+    destination_bucket = client.get_bucket(DESTINATION_BUCKET)
     blob = bucket.blob(name)
-    _ = bucket.copy_blob(blob.path, DESTINATION_BUCKET, name)
+    _ = bucket.copy_blob(blob.path, destination_bucket, name)
     blob.delete()
