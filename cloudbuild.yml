@@ -17,3 +17,4 @@ steps:
   - --max-instances=1
   - --set-secrets=BOT_API_TOKEN=tbot-api-token:1
   - --set-env-vars=CHAT_ID=${_CHAT_ID}
+  - timeout=540s
