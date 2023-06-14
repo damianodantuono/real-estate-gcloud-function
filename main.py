@@ -2,6 +2,51 @@ import functions_framework
 from google.cloud import bigquery
 from google.cloud import storage
 from pathlib import Path
+import datetime
+import os
+import requests
+
+
+def notifier():
+    def build_message(title, price, link) -> str:
+        return f"""Nuovo annuncio trovato!
+    \U0001F3E0: {title}
+    \U0001F4B0: {price}
+    \U0001F517: {link}"""
+
+    def send_tgram_message(message: str, chat_id: int, bot_token_api: str) -> None:
+        send_message = requests.post(f"https://api.telegram.org/bot{bot_token_api}/sendMessage",
+                                     data={"chat_id": chat_id, "text": message})
+        if send_message.status_code != 200:
+            raise Exception(f"Error sending message to chat_id: {chat_id}. Status code: {send_message.status_code}")
+
+    start_datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"This run starts: {start_datetime}")
+    client = bigquery.Client()
+    with open('sql_scripts/fetch_new_data.sql', 'r') as f:
+        FETCH_NEW_DATA_QUERY = f.read()
+    query_job = client.query(FETCH_NEW_DATA_QUERY)
+    results = query_job.result()
+    if results.total_rows == 0:
+        print("No new data found")
+    else:
+        chat_id = int(os.getenv('CHAT_ID'))
+        bot_token_api = os.getenv('BOT_API_TOKEN')
+        if results.total_rows == 1:
+            message = f"Trovata una nuova inserzione."
+        else:
+            message = f"Trovate {results.total_rows} nuove inserzioni."
+        message += '\nParametri di ricerca: \n- Prezzo: ≤ 1000 EUR/MESE\n- Città: Como'
+        send_tgram_message(message, chat_id, bot_token_api)
+        for row in results:
+            message = build_message(row['Title'], row['price'], row['link'])
+            send_tgram_message(message, chat_id, bot_token_api)
+    end_datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"This run ends: {end_datetime}")
+    with open('sql_scripts/update_notifier_runner_configuration.sql', 'r') as f:
+        UPDATE_NOTIFIER_RUNNER_CONFIGURATION = f.read().format(start_time=start_datetime, end_time=end_datetime)
+    _ = client.query(UPDATE_NOTIFIER_RUNNER_CONFIGURATION.format(start_time=start_datetime, end_time=end_datetime))
+    return "OK"
 
 
 # Triggered by a change in a storage bucket
@@ -48,3 +93,5 @@ def file_processing(cloud_event):
 
     _ = source_bucket.copy_blob(blob, destination_bucket, filename)
     blob.delete()
+
+    notifier()
