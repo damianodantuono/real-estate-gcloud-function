@@ -45,6 +45,9 @@ def notifier():
             message = build_message(row['Title'], row['price'], row['link'])
             send_tgram_message(message, chat_id, bot_token_api)
             time.sleep(1)
+            i += 1
+            if i % 10 == 0:
+                time.sleep(20)
     end_datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"This run ends: {end_datetime}")
     with open('sql_scripts/update_notifier_runner_configuration.sql', 'r') as f:

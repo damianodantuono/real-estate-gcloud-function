@@ -30,5 +30,5 @@ UPDATE `real-estate-analyser-dv.dwhre.FCT_HOUSES`
 SET
 DELETED_FLAG = True,
 INSERT_UPDATE_TIMESTAMP = current_timestamp()
-WHERE ID NOT IN (SELECT ID FROM `real-estate-analyser-dv.dwhre.EXT_HOUSES`)
+WHERE ID NOT IN (SELECT ID FROM `real-estate-analyser-dv.dwhre.EXT_HOUSES`) and NOT DELETED_FLAG
 ;
