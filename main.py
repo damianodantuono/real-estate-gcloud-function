@@ -65,7 +65,7 @@ def file_processing(cloud_event):
 
     # fetch event time
     SECONDS_TO_IGNORE = 10
-    event_time = pendulum.parse(cloud_event.attributes['time'])
+    event_time = pendulum.parse(cloud_event['time'])
 
     # if event time is older than 1 minute, ignore it
     if (pendulum.now(tz='UTC') - event_time).total_seconds() > SECONDS_TO_IGNORE:
