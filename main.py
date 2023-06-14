@@ -6,6 +6,7 @@ import datetime
 import os
 import requests
 import time
+import pendulum
 
 
 def notifier():
@@ -63,11 +64,12 @@ def file_processing(cloud_event):
     filename = Path(name).name
 
     # fetch event time
-    event_time = cloud_event.context.timestamp
+    SECONDS_TO_IGNORE = 10
+    event_time = pendulum.parse(cloud_event.time)
 
     # if event time is older than 1 minute, ignore it
-    if (datetime.datetime.utcnow() - event_time).total_seconds() > 10:
-        print("Ignoring event older than 1 minute")
+    if (pendulum.now(tz='UTC') - event_time).total_seconds() > SECONDS_TO_IGNORE:
+        print(f"Ignoring event older than {SECONDS_TO_IGNORE} seconds")
         return "OK"
 
     DESTINATION_BUCKET = 'archived-scraped-data'
