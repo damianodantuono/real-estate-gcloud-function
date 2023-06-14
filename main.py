@@ -5,6 +5,7 @@ from pathlib import Path
 import datetime
 import os
 import requests
+import time
 
 
 def notifier():
@@ -38,9 +39,13 @@ def notifier():
             message = f"Trovate {results.total_rows} nuove inserzioni."
         message += '\nParametri di ricerca: \n- Prezzo: ≤ 1000 EUR/MESE\n- Città: Como'
         send_tgram_message(message, chat_id, bot_token_api)
+        i = 0
         for row in results:
             message = build_message(row['Title'], row['price'], row['link'])
             send_tgram_message(message, chat_id, bot_token_api)
+            i += 1
+            if i % 5 == 0:
+                time.sleep(60)
     end_datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"This run ends: {end_datetime}")
     with open('sql_scripts/update_notifier_runner_configuration.sql', 'r') as f:
@@ -56,6 +61,14 @@ def file_processing(cloud_event):
     bucket = data["bucket"]
     name = data["name"]
     filename = Path(name).name
+
+    # fetch event time
+    event_time = cloud_event.context.timestamp
+
+    # if event time is older than 1 minute, ignore it
+    if (datetime.datetime.utcnow() - event_time).total_seconds() > 10:
+        print("Ignoring event older than 1 minute")
+        return "OK"
 
     DESTINATION_BUCKET = 'archived-scraped-data'
 
