@@ -11,10 +11,10 @@ import pendulum
 
 def notifier():
     def build_message(title, price, link) -> str:
-        return f"""Nuovo annuncio trovato!
-    \U0001F3E0: {title}
-    \U0001F4B0: {price}
-    \U0001F517: {link}"""
+        return f"""Nuovo annuncio trovato!\n
+\U0001F3E0: {title}
+\U0001F4B0: {price}
+\U0001F517: {link}\n"""
 
     def send_tgram_message(message: str, chat_id: int, bot_token_api: str) -> None:
         send_message = requests.post(f"https://api.telegram.org/bot{bot_token_api}/sendMessage",
