@@ -1,4 +1,4 @@
-UPDATE `real-estate-analyser-dv.config.notifier_runner`
-SET last_run_start = {start_time},
-    last_run_end = {end_time}
+truncate table `real-estate-analyser-dv.config.notifier_runner`;
+insert into `real-estate-analyser-dv.config.notifier_runner`
+values ('{start_time}', '{end_time}')
 ;
