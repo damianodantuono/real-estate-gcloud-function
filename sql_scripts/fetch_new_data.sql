@@ -5,4 +5,5 @@ where f.INSERT_UPDATE_TIMESTAMP >= COALESCE((SELECT last_run_start FROM `real-es
 and not deleted_flag
 and price between 0 and 1000
 and city_name = 'como'
+and IS_RENT
 ;
